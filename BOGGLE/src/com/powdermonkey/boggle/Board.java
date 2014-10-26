@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Board {
-
+	//purple-alert woz ere
 	private char[][] dice;
 	private int cdice;
 	private char[][] roll;
