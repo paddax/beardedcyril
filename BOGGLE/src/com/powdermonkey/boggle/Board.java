@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
 
 public class Board {
 	//purple-alert woz ere
@@ -42,12 +43,20 @@ public class Board {
 	}
 
 	public void shake() {
+		LinkedList<Integer> di = new LinkedList<>();
+		for(int i=0; i<cdice; i++) {
+			di.add(i);
+		}
 		for (int i = 0; i < cdice; i++) {
 			int side = (int) (6 * Math.random());
-			roll[i / square][i % square] = dice[i][side];
+			int diceref = (int)(di.size() * Math.random());
+			int diceind = di.get(diceref);
+			di.remove(diceref);
+			roll[i / square][i % square] = dice[diceind][side];
 		}
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < square; i++) {
@@ -67,8 +76,8 @@ public class Board {
 			b.shake();
 			System.out.println(b.toString());
 			
-			int x = "blog".compareTo("blog1");
-			System.out.println(x);
+			System.out.println("shu".compareTo("shuft"));
+			System.out.println("shun".compareTo("shuft"));
 		} catch (IOException e) {
 		}
 	}

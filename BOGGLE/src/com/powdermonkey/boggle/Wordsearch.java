@@ -1,34 +1,129 @@
 package com.powdermonkey.boggle;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 public class Wordsearch {
 
+	private Dictionary dictionary;
+	private char[][] roll = {
+		{'b', 'u', 'n', 'd'},
+		{'u', 'b', 'c', 'd'},
+		{'n', 'b', 'c', 'd'},
+		{'n', 'u', 'h', 's'},
+	};
+	
+	private HashSet<String> answer;
+	
 	public Wordsearch() {
-	}
-
-	public static void main(String[] args) {
 		try {
 			FileInputStream fis = new FileInputStream("sowpods_eu.txt");
-			Wordsearch x = new Wordsearch();
-			Dictionary dictionary = new Dictionary();
+			dictionary = new Dictionary();
 			dictionary.loadWords(fis);
-			
+			answer = new HashSet<>();
+
 			Board b = new Board(4);
 			b.load(new FileInputStream("dice2014.txt"));
 			b.shake();
 			System.out.println(b.toString());
+
+			roll = b.getRoll();
+
+			long t = System.currentTimeMillis();
+					
+			solve();
 			
-			char[][] r = b.getRoll();
+			t = System.currentTimeMillis() - t;
+			ArrayList<String> sorted = new ArrayList<>(answer);
+			Collections.sort(sorted);
+			for(String s: sorted) {
+				System.out.println(s);
+			}
+			
+			System.out.println("Total answers found: " + sorted.size() + " in " + t + "ms");
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) {
+		new Wordsearch();
+	}
+
+	private void solve() {
+		boolean[][] path = new boolean[roll.length][roll.length];
+
+		for (int i = 0; i < roll.length; i++) {
+			for (int j = 0; j < roll.length; j++) {
+				DictionaryIncrementalSearch s = new DictionaryIncrementalSearch();
+				search(s, duplo(path), i, j);
+			}
+		}
+	}
+
+	private void search(DictionaryIncrementalSearch s, boolean[][] path, int i, int j) {
+		path[i][j] = true;
+		s.text = s.text + roll[i][j];
+		if(s.text.length() > 2) {
+			dictionary.lookup(s);
+			if(!s.partial)
+				return;
+			if(s.valid) 
+				answer.add(s.text);
+		}
+		if (i > 0) { // left
+			if (path[i - 1][j] != true) {
+				search(s.clone(), duplo(path), i - 1, j);
+			}
+		}
+		if (i + 1 < path.length) { // right
+			if (path[i + 1][j] != true) {
+				search(s.clone(), duplo(path), i + 1, j);
+			}
+		}
+		if (j > 0) { // up
+			if (path[i][j - 1] != true) {
+				search(s.clone(), duplo(path), i, j - 1);
+			}
+		}
+		if (j + 1 < path.length) { // down
+			if (path[i][j + 1] != true) {
+				search(s.clone(), duplo(path), i, j + 1);
+			}
+		}
+		if (i > 0 && j > 0) { // left up
+			if (path[i - 1][j - 1] != true) {
+				search(s.clone(), duplo(path), i - 1, j - 1);
+			}
+		}
+
+		if (i > 0 && j + 1 < path.length) { // left down
+			if (path[i - 1][j + 1] != true) {
+				search(s.clone(), duplo(path), i - 1, j + 1);
+			}
+		}
+
+		if (i + 1 < path.length && j > 0) { // right up
+			if (path[i + 1][j - 1] != true) {
+				search(s.clone(), duplo(path), i + 1, j - 1);
+			}
+		}
+		if (i + 1 < path.length && j + 1 < path.length) { // right down
+			if (path[i + 1][j + 1] != true) {
+				search(s.clone(), duplo(path), i + 1, j + 1);
+			}
+		}
+	}
+
+	private boolean[][] duplo(boolean[][] path) {
+		boolean[][] p = new boolean[path.length][path.length];
+		for (int i = 0; i < path.length; i++) {
+			System.arraycopy(path[i], 0, p[i], 0, path[i].length);
+		}
+		return p;
 	}
 }

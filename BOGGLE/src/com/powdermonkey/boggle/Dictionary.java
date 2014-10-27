@@ -31,32 +31,47 @@ public class Dictionary {
 			}
 		}
 		for (int i = 0; i < 26; i++) {
-			System.out.println("" + (char) ('a' + i) + " " + alphabet[i]);
+			//System.out.println("" + (char) ('a' + i) + " " + alphabet[i]);
 		}
 
 	}
 
-	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s,
-			String l) {
-		if (l.length() == 0)
+	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s) {
+		if (s.text.length() == 0)
 			return s;
 
 		if (s.index == 0) {
-			int index = l.charAt(0) - 'a';
+			int index = s.text.charAt(0) - 'a';
 			s.index = alphabet[index];
 		}
 
 		for (int i = s.index; i < words.size(); i++) {
 			String test = words.get(i);
-			if(l.length() == test.length()) {
-				// if the same length then we must be lexicographically earlier (result on same)
+			int comp = s.text.compareTo(test);
+			if (comp == 0) {
+				s.index = i + 1;
+				s.valid = true;
+				s.partial = true;
+				return s;
+			} else if (comp > 0) {
+			} else if (comp < 0) {
+				if(s.text.length() < test.length()) {
+					if(test.substring(0, s.text.length()).compareTo(s.text) == 0) {
+						s.partial = true;
+						s.index = i;
+						s.valid = false;
+						return s;
+					} else {
+						s.valid = false;
+						return s;
+					}
+				}
+				else {
+					s.valid = false;
+					return s;
+				}
 			}
-			else if(l.length() < test.length()) {
-				// if the length is shorter the substring must be lexicographically either the same or earlier
-			}
-			else {
-				// if the length is longer the substring must be lexicographically either the same or earlier
-			}
+
 		}
 		s.valid = false;
 		return s;
