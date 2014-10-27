@@ -10,7 +10,7 @@ public class DictionaryIncrementalSearch {
 	public String text;
 	
 	public DictionaryIncrementalSearch() {
-		index = 0;
+		index = -1;
 		text = "";
 	}
 	

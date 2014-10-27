@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class Dictionary {
+public class Dictionary implements IDictionary {
 	private ArrayList<String> words;
 	private int[] alphabet;
 
@@ -15,13 +15,14 @@ public class Dictionary {
 		alphabet = new int[26];
 	}
 
+	@Override
 	public void loadWords(InputStream is) throws IOException {
 		BufferedReader sr = new BufferedReader(new InputStreamReader(is));
 		String line = null;
 		char x = 'a' - 1;
 		while ((line = sr.readLine()) != null) {
 			String s = line.trim().toLowerCase();
-			if (s.length() > 0) {
+			if (s.length() > 2) {
 				char c = s.charAt(0);
 				while (c != x) {
 					x++;
@@ -35,18 +36,22 @@ public class Dictionary {
 		}
 
 	}
+	
+	private int lookupcount;
 
+	@Override
 	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s) {
 		if (s.text.length() == 0)
 			return s;
 
-		if (s.index == 0) {
+		if (s.index == -1) {
 			int index = s.text.charAt(0) - 'a';
 			s.index = alphabet[index];
 		}
 
 		for (int i = s.index; i < words.size(); i++) {
 			String test = words.get(i);
+			lookupcount++;
 			int comp = s.text.compareTo(test);
 			if (comp == 0) {
 				s.index = i + 1;
@@ -76,5 +81,10 @@ public class Dictionary {
 		s.valid = false;
 		return s;
 	}
-
+	
+	
+	
+	public String toString() {
+		return "" + lookupcount;
+	}
 }

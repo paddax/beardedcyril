@@ -8,12 +8,13 @@ import java.util.HashSet;
 
 public class Wordsearch {
 
-	private Dictionary dictionary;
+	private IDictionary dictionary;
+	
 	private char[][] roll = {
-		{'b', 'u', 'n', 'd'},
-		{'u', 'b', 'c', 'd'},
-		{'n', 'b', 'c', 'd'},
-		{'n', 'u', 'h', 's'},
+		{'u', 'n', 't', 'i'},
+		{'o', 't', 'e', 's'},
+		{'y', 'a', 'w', 'r'},
+		{'s', 'e', 'h', 'e'},
 	};
 	
 	private HashSet<String> answer;
@@ -21,7 +22,7 @@ public class Wordsearch {
 	public Wordsearch() {
 		try {
 			FileInputStream fis = new FileInputStream("sowpods_eu.txt");
-			dictionary = new Dictionary();
+			dictionary = new Dictionary2();
 			dictionary.loadWords(fis);
 			answer = new HashSet<>();
 
@@ -30,7 +31,7 @@ public class Wordsearch {
 			b.shake();
 			System.out.println(b.toString());
 
-			roll = b.getRoll();
+			//roll = b.getRoll();
 
 			long t = System.currentTimeMillis();
 					
@@ -44,7 +45,8 @@ public class Wordsearch {
 			}
 			
 			System.out.println("Total answers found: " + sorted.size() + " in " + t + "ms");
-
+			System.out.println("Solve count: " + solvecount);
+			System.out.println("Dictionary lookup: " + dictionary.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -65,10 +67,13 @@ public class Wordsearch {
 		}
 	}
 
+	private int solvecount = 0;
+	
 	private void search(DictionaryIncrementalSearch s, boolean[][] path, int i, int j) {
 		path[i][j] = true;
 		s.text = s.text + roll[i][j];
 		if(s.text.length() > 2) {
+			solvecount++;
 			dictionary.lookup(s);
 			if(!s.partial)
 				return;
