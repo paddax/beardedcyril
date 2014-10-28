@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 public class Board {
-	//purple-alert woz ere
+	//purple-alert woz ere again 27-10-2014 2143
 	private char[][] dice;
 	private int cdice;
 	private char[][] roll;
