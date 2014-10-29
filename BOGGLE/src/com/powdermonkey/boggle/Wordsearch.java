@@ -21,7 +21,8 @@ public class Wordsearch {
 	
 	public Wordsearch() {
 		try {
-			FileInputStream fis = new FileInputStream("sowpods_eu.txt");
+			//FileInputStream fis = new FileInputStream("sowpods_eu.txt");
+			FileInputStream fis = new FileInputStream("TWL06.txt");
 			dictionary = new Dictionary2();
 			dictionary.loadWords(fis);
 			answer = new HashSet<>();
@@ -34,7 +35,7 @@ public class Wordsearch {
 			//roll = b.getRoll();
 
 			long t = System.currentTimeMillis();
-					
+			
 			solve();
 			
 			t = System.currentTimeMillis() - t;

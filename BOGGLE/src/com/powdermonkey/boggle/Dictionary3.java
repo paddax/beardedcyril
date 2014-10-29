@@ -6,13 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class Dictionary2 implements IDictionary {
+public class Dictionary3 implements IDictionary {
 	private ArrayList<String> words;
-	private int[][] alphabet;
+	private int[][][] alphabet;
 
-	public Dictionary2() {
+	public Dictionary3() {
 		words = new ArrayList<>();
-		alphabet = new int[26][26];
+		alphabet = new int[26][26][26];
 	}
 
 	@Override
@@ -28,42 +28,53 @@ public class Dictionary2 implements IDictionary {
 		int sofar = 0;
 		for (int i = 0; i < 26; i++) {
 			char one = (char) ('a' + i);
-			for(int j=0; j<26; j++) {
-				alphabet[i][j] = -1;
+			for (int j = 0; j < 26; j++) {
 				char two = (char) ('a' + j);
-				search: while(sofar < words.size()) {
-					String s = words.get(sofar);
-					char oned = s.charAt(0);
-					char twod = s.charAt(1);
-					if(oned == one && twod == two) {
-						alphabet[i][j] = sofar;
-						break search;
+				for (int k = 0; k < 26; k++) {
+					char three = (char) ('a' + k);
+					alphabet[i][j][k] = -1;
+					search: while (sofar < words.size()) {
+						String s = words.get(sofar);
+						char oned = s.charAt(0);
+						char twod = s.charAt(1);
+						char threed = s.charAt(2);
+						if (oned == one && twod == two && threed == three) {
+							alphabet[i][j][k] = sofar;
+							sofar++;
+							break search;
+						}
+						if (oned > one) {
+							break search;
+						}
+						if (oned >= one && twod > two) {
+							break search;
+						}
+						if (oned >= one && twod >= two && threed > three) {
+							break search;
+						}
+						sofar++;
 					}
-					if (oned > one) {
-						break search;
-					}
-					if (oned >= one && twod > two) {
-						break search;
-					}
-					sofar++;
 				}
 			}
 		}
 
 	}
-	
+
 	private int lookupcount;
 
 	@Override
 	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s) {
-		if (s.text.length() < 2)
+		if (s.text.length() < 3) {
+			s.partial = true;
 			return s;
+		}
 
 		if (s.index == -1) {
 			int one = s.text.charAt(0) - 'a';
 			int two = s.text.charAt(1) - 'a';
-			s.index = alphabet[one][two];
-			if(s.index == -1) {
+			int three = s.text.charAt(2) - 'a';
+			s.index = alphabet[one][two][three];
+			if (s.index == -1) {
 				s.valid = false;
 				return s;
 			}
@@ -80,8 +91,8 @@ public class Dictionary2 implements IDictionary {
 				return s;
 			} else if (comp > 0) {
 			} else if (comp < 0) {
-				if(s.text.length() < test.length()) {
-					if(test.substring(0, s.text.length()).compareTo(s.text) == 0) {
+				if (s.text.length() < test.length()) {
+					if (test.substring(0, s.text.length()).compareTo(s.text) == 0) {
 						s.partial = true;
 						s.index = i;
 						s.valid = false;
@@ -90,8 +101,7 @@ public class Dictionary2 implements IDictionary {
 						s.valid = false;
 						return s;
 					}
-				}
-				else {
+				} else {
 					s.valid = false;
 					return s;
 				}
@@ -101,9 +111,7 @@ public class Dictionary2 implements IDictionary {
 		s.valid = false;
 		return s;
 	}
-	
-	
-	
+
 	public String toString() {
 		return "" + lookupcount;
 	}
