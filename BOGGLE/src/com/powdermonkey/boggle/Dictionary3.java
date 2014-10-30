@@ -6,13 +6,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class Dictionary3 implements IDictionary {
+/**
+ * triple letter index
+ * 
+ * @author paddax@gmail.com
+ * 
+ */
+public class Dictionary3 extends AbstractDictionary {
+	
 	private ArrayList<String> words;
-	private int[][][] alphabet;
+	private int[][][] index;
 
 	public Dictionary3() {
 		words = new ArrayList<>();
-		alphabet = new int[26][26][26];
+		index = new int[26][26][26];
 	}
 
 	@Override
@@ -32,14 +39,14 @@ public class Dictionary3 implements IDictionary {
 				char two = (char) ('a' + j);
 				for (int k = 0; k < 26; k++) {
 					char three = (char) ('a' + k);
-					alphabet[i][j][k] = -1;
+					index[i][j][k] = -1;
 					search: while (sofar < words.size()) {
 						String s = words.get(sofar);
 						char oned = s.charAt(0);
 						char twod = s.charAt(1);
 						char threed = s.charAt(2);
 						if (oned == one && twod == two && threed == three) {
-							alphabet[i][j][k] = sofar;
+							index[i][j][k] = sofar;
 							sofar++;
 							break search;
 						}
@@ -60,8 +67,6 @@ public class Dictionary3 implements IDictionary {
 
 	}
 
-	private int lookupcount;
-
 	@Override
 	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s) {
 		if (s.text.length() < 3) {
@@ -69,20 +74,22 @@ public class Dictionary3 implements IDictionary {
 			return s;
 		}
 
+		lookupcount++;
 		if (s.index == -1) {
 			int one = s.text.charAt(0) - 'a';
 			int two = s.text.charAt(1) - 'a';
 			int three = s.text.charAt(2) - 'a';
-			s.index = alphabet[one][two][three];
+			s.index = index[one][two][three];
 			if (s.index == -1) {
 				s.valid = false;
+				immediatereject++;
 				return s;
 			}
 		}
 
 		for (int i = s.index; i < words.size(); i++) {
 			String test = words.get(i);
-			lookupcount++;
+			comparecount++;
 			int comp = s.text.compareTo(test);
 			if (comp == 0) {
 				s.index = i + 1;
@@ -110,9 +117,5 @@ public class Dictionary3 implements IDictionary {
 		}
 		s.valid = false;
 		return s;
-	}
-
-	public String toString() {
-		return "" + lookupcount;
 	}
 }
