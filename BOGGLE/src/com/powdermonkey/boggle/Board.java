@@ -18,6 +18,7 @@ import java.util.LinkedList;
  */
 public class Board {
 	// purple-alert woz ere
+	//FlirtyMomma woz ere 2
 	/**
 	 * Array of dice with each member having six sides (the standard board can
 	 * be represented as dice[16][6] (16 dice - 6 sides / 96 faces)
