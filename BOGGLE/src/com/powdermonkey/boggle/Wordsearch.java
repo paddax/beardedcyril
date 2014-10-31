@@ -6,12 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-/**
- * Brings together a Dictionary and Board, first shakes the board then using the dictionary finds all solutions
- * 
- * @author paddax@gmail.com
- *
- */
 public class Wordsearch {
 
 	private IDictionary dictionary;
@@ -24,12 +18,12 @@ public class Wordsearch {
 	};
 	
 	private HashSet<String> answer;
-	private static final String dicfile = "TWL06.txt"; // "sowpods_eu.txt" 
 	
 	public Wordsearch() {
 		try {
-			FileInputStream fis = new FileInputStream(dicfile);
-			dictionary = new Dictionary3();
+			//FileInputStream fis = new FileInputStream("sowpods_eu.txt");
+			FileInputStream fis = new FileInputStream("TWL06.txt");
+			dictionary = new Dictionary2();
 			dictionary.loadWords(fis);
 			answer = new HashSet<>();
 
@@ -38,7 +32,7 @@ public class Wordsearch {
 			b.shake();
 			System.out.println(b.toString());
 
-			roll = b.getRoll();
+			//roll = b.getRoll();
 
 			long t = System.currentTimeMillis();
 			
