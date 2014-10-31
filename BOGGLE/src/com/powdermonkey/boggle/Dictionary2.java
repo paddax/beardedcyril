@@ -6,13 +6,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class Dictionary2 implements IDictionary {
+/**
+ * Double letter index
+ * 
+ * @author paddax@gmail.com
+ * 
+ */
+public class Dictionary2 extends AbstractDictionary {
 	private ArrayList<String> words;
-	private int[][] alphabet;
+	private int[][] index;
 
 	public Dictionary2() {
 		words = new ArrayList<>();
-		alphabet = new int[26][26];
+		index = new int[26][26];
 	}
 
 	@Override
@@ -28,15 +34,15 @@ public class Dictionary2 implements IDictionary {
 		int sofar = 0;
 		for (int i = 0; i < 26; i++) {
 			char one = (char) ('a' + i);
-			for(int j=0; j<26; j++) {
-				alphabet[i][j] = -1;
+			for (int j = 0; j < 26; j++) {
+				index[i][j] = -1;
 				char two = (char) ('a' + j);
-				search: while(sofar < words.size()) {
+				search: while (sofar < words.size()) {
 					String s = words.get(sofar);
 					char oned = s.charAt(0);
 					char twod = s.charAt(1);
-					if(oned == one && twod == two) {
-						alphabet[i][j] = sofar;
+					if (oned == one && twod == two) {
+						index[i][j] = sofar;
 						break search;
 					}
 					if (oned > one) {
@@ -51,27 +57,27 @@ public class Dictionary2 implements IDictionary {
 		}
 
 	}
-	
-	private int lookupcount;
 
 	@Override
 	public DictionaryIncrementalSearch lookup(DictionaryIncrementalSearch s) {
 		if (s.text.length() < 2)
 			return s;
 
+		lookupcount++;
 		if (s.index == -1) {
 			int one = s.text.charAt(0) - 'a';
 			int two = s.text.charAt(1) - 'a';
-			s.index = alphabet[one][two];
-			if(s.index == -1) {
+			s.index = index[one][two];
+			if (s.index == -1) {
 				s.valid = false;
+				immediatereject++;
 				return s;
 			}
 		}
 
 		for (int i = s.index; i < words.size(); i++) {
 			String test = words.get(i);
-			lookupcount++;
+			comparecount++;
 			int comp = s.text.compareTo(test);
 			if (comp == 0) {
 				s.index = i + 1;
@@ -80,8 +86,8 @@ public class Dictionary2 implements IDictionary {
 				return s;
 			} else if (comp > 0) {
 			} else if (comp < 0) {
-				if(s.text.length() < test.length()) {
-					if(test.substring(0, s.text.length()).compareTo(s.text) == 0) {
+				if (s.text.length() < test.length()) {
+					if (test.substring(0, s.text.length()).compareTo(s.text) == 0) {
 						s.partial = true;
 						s.index = i;
 						s.valid = false;
@@ -90,8 +96,7 @@ public class Dictionary2 implements IDictionary {
 						s.valid = false;
 						return s;
 					}
-				}
-				else {
+				} else {
 					s.valid = false;
 					return s;
 				}
@@ -100,11 +105,5 @@ public class Dictionary2 implements IDictionary {
 		}
 		s.valid = false;
 		return s;
-	}
-	
-	
-	
-	public String toString() {
-		return "" + lookupcount;
 	}
 }
